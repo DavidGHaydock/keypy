@@ -2,7 +2,7 @@
 #######  Parameters Provider  ####
 ##################################
 
-from __future__ import print_function
+
 
 from scipy.stats import pearsonr
 from keypy.microstates.microstates_helper import *
@@ -43,7 +43,7 @@ def parameter_preprocessing(confobj, state_match_percentage_all_epochs):
 
      for map in range(confobj.original_nr_of_maps):
         listli=[]
-        for epochnr in state_match_percentage_all_epochs.keys():
+        for epochnr in list(state_match_percentage_all_epochs.keys()):
             listli.append(state_match_percentage_all_epochs[epochnr][map,1])
         map_avg_perc[map,0]=map
         if np.isnan(listli).all():
@@ -74,7 +74,7 @@ def create_parameter_spss_sheets(confobj, eeg_info_study_obj, outputfolder, outp
 
     #get maximal number of epochs across all group pt cond run
     max_len=0
-    for output_data_path, output_data_per_path in output_data_all.iteritems():
+    for output_data_path, output_data_per_path in output_data_all.items():
         runwise_data, epochwise_data, mapwise_data = output_data_per_path
         #count number of epochs
         curr_len=len(mapwise_data['Occurrance per s'])
@@ -87,7 +87,7 @@ def create_parameter_spss_sheets(confobj, eeg_info_study_obj, outputfolder, outp
     cond_set = Set()
     run_set = Set()
 
-    for output_data_path in output_data_all.keys():
+    for output_data_path in list(output_data_all.keys()):
         #in order to ensure that all participants are included, the participant is characterized by its name and its group
         pt_set.add("{0} {1}" .format(output_data_path.level0, output_data_path.level1))
         cond_set.add(output_data_path.level2)
@@ -111,14 +111,14 @@ def create_parameter_spss_sheets(confobj, eeg_info_study_obj, outputfolder, outp
             for condi in cond_list:
                 parameters_mean[meas][pti][condi]=dict.fromkeys(run_list)
                 for runi in run_list:
-                    parameters_mean[meas][pti][condi][runi]=dict.fromkeys(range(confobj.original_nr_of_maps))
+                    parameters_mean[meas][pti][condi][runi]=dict.fromkeys(list(range(confobj.original_nr_of_maps)))
 
 
     for meas in three__measures:           
         for pti in pt_list:
             for condi in cond_list:
                 for runi in run_list:
-                    for output_data_path, output_data_per_path in output_data_all.iteritems():
+                    for output_data_path, output_data_per_path in output_data_all.items():
                         runwise_data, epochwise_data, mapwise_data = output_data_per_path
                         if "{0} {1}" .format(output_data_path.level0, output_data_path.level1) == pti and output_data_path.level2 == condi and output_data_path.level3 == runi:
                             if mapwise_data[meas]:
@@ -192,10 +192,10 @@ class ParametersDataProvider(object):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
-                    for current_level2 in f['/{0}/{1}'.format(current_level0, current_level1)].keys():  
-                        for current_level3 in f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
+                    for current_level2 in list(f['/{0}/{1}'.format(current_level0, current_level1)].keys()):  
+                        for current_level3 in list(f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys()):  
                             out_paths_set.add(Levels4Path(current_level0, current_level1, current_level2, current_level3))
         return list(out_paths_set)
     
@@ -231,22 +231,22 @@ class ParametersDataProvider(object):
         with closing( h5py.File(self._outputfile) ) as k:
             #print('Computing parameters for: {0}'.format(output_path.level0))
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
 
-            if output_path.level2 in pt_group.keys():
+            if output_path.level2 in list(pt_group.keys()):
                 cond_group = k['/{0}/{1}/{2}' .format(output_path.level0, output_path.level1, output_path.level2)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.level2)  )  
 
-            if output_path.level3 in cond_group.keys():
+            if output_path.level3 in list(cond_group.keys()):
                 run_group = k['/{0}/{1}/{2}/{3}' .format(output_path.level0, output_path.level1, output_path.level2, output_path.level3)]
             else:
                 run_group = cond_group.create_group( '{0}' .format(output_path.level3)  )  
@@ -268,7 +268,7 @@ class ParametersDataProvider(object):
             #create dataset of mean percentages for class correspondances across epochs
             map_avg_perc=parameter_preprocessing(confobj, epochwise_data['State Match Mean percentage'])  
 
-            if 'State Match Mean p' in run_group.keys():
+            if 'State Match Mean p' in list(run_group.keys()):
                 print('State Match Mean already exists. Not recomputed for {0} {1} {2} {3}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3))
             else:
                 if map_avg_perc.any():
@@ -282,7 +282,7 @@ class ParametersDataProvider(object):
 
             ##add other runwise datasets
             for dataset_name in runwise_data:
-                if dataset_name in run_group.keys():
+                if dataset_name in list(run_group.keys()):
                     print( '{0} already exists. Not recomputed for {0} {1} {2} {3}'.format(dataset_name, output_path.level0, output_path.level1, output_path.level2, output_path.level3))
                 else:
                     if runwise_data[dataset_name].any():
@@ -302,7 +302,7 @@ class ParametersDataProvider(object):
             ##epochwise output
             for epochnr in range(number_of_epochs):
                 #create folder
-                if "ep_"+"%03d" % (epochnr,) in run_group.keys():
+                if "ep_"+"%03d" % (epochnr,) in list(run_group.keys()):
                     ep_group = k['/{0}/{1}/{2}/{3}/{4}' .format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, "ep_"+"%03d" % (epochnr,))]
                 else:
                     ep_group = run_group.create_group("ep_"+"%03d" % (epochnr,))  
@@ -310,12 +310,12 @@ class ParametersDataProvider(object):
                         print(epochnr)
 
                 #add attributes to epoch folder
-                for attribute_name, attribute_value in output_attributes.iteritems():
+                for attribute_name, attribute_value in output_attributes.items():
                     ep_group.attrs['{0}' .format(attribute_name)]=str(attribute_value[epochnr])
     
                 #add epochwise datasets
                 for epochwise_data_name in epochwise_data:
-                    if not epochwise_data_name in ep_group.keys():
+                    if not epochwise_data_name in list(ep_group.keys()):
                         if epochwise_data[epochwise_data_name][epochnr].any():
                             ep_group.create_dataset(epochwise_data_name, data = epochwise_data[epochwise_data_name][epochnr])
                         else:
@@ -326,13 +326,13 @@ class ParametersDataProvider(object):
 
                 #add mapwise datasets
                 for mapnr in range(confobj.original_nr_of_maps):
-                    if "map_"+"%02d" % (mapnr,) in ep_group.keys():
+                    if "map_"+"%02d" % (mapnr,) in list(ep_group.keys()):
                         map_group = k['/{0}/{1}/{2}/{3}/{4}/{5}' .format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, "ep_"+"%03d" % (epochnr,), "map_"+"%02d" % (mapnr,))]
                     else:
                         map_group = ep_group.create_group( "map_"+"%02d" % (mapnr,))
  
                     for mapwise_data_name in mapwise_data:
-                        if not mapwise_data_name in map_group.keys():
+                        if not mapwise_data_name in list(map_group.keys()):
                             if mapwise_data[mapwise_data_name][epochnr][mapnr]:
                                 map_group.create_dataset(mapwise_data_name, data = mapwise_data[mapwise_data_name][epochnr][mapnr])
                             else:
@@ -388,15 +388,15 @@ class ParametersBy1LevelDataProvider1(ParametersDataProvider):
 
         with closing( h5py.File(self._sortbyfile, 'r') ) as f: 
             #find out which level you need for sorting
-            if 'all' in f['/'].keys():
+            if 'all' in list(f['/'].keys()):
                 path = '/{0}' .format('all')
-            elif output_path.level0 in f['/'].keys():
+            elif output_path.level0 in list(f['/'].keys()):
                 path = '/{0}' .format(output_path.level0)
-            elif output_path.level1 in f['/'].keys():
+            elif output_path.level1 in list(f['/'].keys()):
                 path = '/{0}' .format(output_path.level1)
-            elif output_path.level2 in f['/'].keys():
+            elif output_path.level2 in list(f['/'].keys()):
                path = '/{0}' .format(output_path.level2)               
-            elif output_path.level3 in f['/'].keys():
+            elif output_path.level3 in list(f['/'].keys()):
                 path = '/{0}' .format(output_path.level3)   
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
@@ -423,13 +423,13 @@ class ParametersBy2LevelsDataProvider1(ParametersDataProvider):
 
             #find out which levels you need for sorting
             #find Level 0
-            if output_path.level0 in f.keys():
+            if output_path.level0 in list(f.keys()):
                 firstlevel = output_path.level0
-            elif output_path.level1 in f.keys():
+            elif output_path.level1 in list(f.keys()):
                 firstlevel = output_path.level1
-            elif output_path.level2 in f.keys():
+            elif output_path.level2 in list(f.keys()):
                 firstlevel = output_path.level2             
-            elif output_path.level3 in f.keys():
+            elif output_path.level3 in list(f.keys()):
                 firstlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
@@ -437,13 +437,13 @@ class ParametersBy2LevelsDataProvider1(ParametersDataProvider):
             #find Level 1
 
 
-            if output_path.level0 in f['/{0}/'.format(firstlevel)].keys():
+            if output_path.level0 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/'.format(firstlevel)].keys()):
                secondlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
@@ -472,37 +472,37 @@ class ParametersBy3LevelsDataProvider1(ParametersDataProvider):
 
             #find out which levels you need for sorting
             #find Level 0
-            if output_path.level0 in f.keys():
+            if output_path.level0 in list(f.keys()):
                 firstlevel = output_path.level0
-            elif output_path.level1 in f.keys():
+            elif output_path.level1 in list(f.keys()):
                 firstlevel = output_path.level1
-            elif output_path.level2 in f.keys():
+            elif output_path.level2 in list(f.keys()):
                 firstlevel = output_path.level2             
-            elif output_path.level3 in f.keys():
+            elif output_path.level3 in list(f.keys()):
                 firstlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
 
             #find Level 1
-            if output_path.level0 in f['/{0}/'.format(firstlevel)].keys():
+            if output_path.level0 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/'.format(firstlevel)].keys()):
                secondlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
 
             #find Level 2
-            if output_path.level0 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            if output_path.level0 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                thirdlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
@@ -530,49 +530,49 @@ class ParametersBy4LevelsDataProvider1(ParametersDataProvider):
 
             #find out which levels you need for sorting
             #find Level 0
-            if output_path.level0 in f.keys():
+            if output_path.level0 in list(f.keys()):
                 firstlevel = output_path.level0
-            elif output_path.level1 in f.keys():
+            elif output_path.level1 in list(f.keys()):
                 firstlevel = output_path.level1
-            elif output_path.level2 in f.keys():
+            elif output_path.level2 in list(f.keys()):
                 firstlevel = output_path.level2             
-            elif output_path.level3 in f.keys():
+            elif output_path.level3 in list(f.keys()):
                 firstlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
 
             #find Level 1
-            if output_path.level0 in f['/{0}/'.format(firstlevel)].keys():
+            if output_path.level0 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/'.format(firstlevel)].keys()):
                secondlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/'.format(firstlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/'.format(firstlevel)].keys()):
                 secondlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
 
             #find Level 2
-            if output_path.level0 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            if output_path.level0 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                thirdlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/{1}/'.format(firstlevel, secondlevel)].keys()):
                 thirdlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
 
             #find Level 3
-            if output_path.level0 in f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys():
+            if output_path.level0 in list(f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys()):
                 fourthlevel = output_path.level0
-            elif output_path.level1 in f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys():
+            elif output_path.level1 in list(f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys()):
                 fourthlevel = output_path.level1
-            elif output_path.level2 in f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys():
+            elif output_path.level2 in list(f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys()):
                fourthlevel = output_path.level2
-            elif output_path.level3 in f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys():
+            elif output_path.level3 in list(f['/{0}/{1}/{2}/'.format(firstlevel, secondlevel, thirdlevel)].keys()):
                 fourthlevel = output_path.level3
             else:
                 print('Sortbypath not found for {0} {1} {2} {3} in HDF5 file {4}'.format(output_path.level0, output_path.level1, output_path.level2, output_path.level3, self._sortbyfile))
@@ -601,7 +601,7 @@ def output_mstate_label_list(confobj, eeg_info_study_obj, outputfolder, output_d
 
     #get maximal number of epochs across all group pt cond run
     max_len=0
-    for output_data_path, output_data_per_path in output_data_all.iteritems():
+    for output_data_path, output_data_per_path in output_data_all.items():
         runwise_data, epochwise_data, mapwise_data = output_data_per_path
         #count number of epochs
         curr_len=len(mapwise_data['Occurrance per s'])
@@ -614,7 +614,7 @@ def output_mstate_label_list(confobj, eeg_info_study_obj, outputfolder, output_d
     cond_set = Set()
     run_set = Set()
 
-    for output_data_path in output_data_all.keys():
+    for output_data_path in list(output_data_all.keys()):
         #in order to ensure that all participants are included, the participant is characterized by its name and its group
         pt_set.add("{0} {1}" .format(output_data_path.level0, output_data_path.level1))
         cond_set.add(output_data_path.level2)
@@ -645,17 +645,17 @@ def output_mstate_label_list(confobj, eeg_info_study_obj, outputfolder, output_d
         for pti in pt_list:
             for condi in cond_list:
                 for runi in run_list:
-                    for output_data_path, output_data_per_path in output_data_all.iteritems():
+                    for output_data_path, output_data_per_path in output_data_all.items():
                         runwise_data, epochwise_data, mapwise_data = output_data_per_path
                         if "{0} {1}" .format(output_data_path.level0, output_data_path.level1) == pti and output_data_path.level2 == condi and output_data_path.level3 == runi:
                             if epochwise_data[meas]:
                                 label_list=[]
-                                if not epochwise_data[meas].keys():
+                                if not list(epochwise_data[meas].keys()):
                                     continue
-                                    print ('Warning', meas, pti, condi, runi, 'epochwise_data[meas].keys() =', epochwise_data[meas].keys())
+                                    print ('Warning', meas, pti, condi, runi, 'epochwise_data[meas].keys() =', list(epochwise_data[meas].keys()))
 
                                 else:
-                                    for epochnr in range(len(epochwise_data[meas].keys())):   
+                                    for epochnr in range(len(list(epochwise_data[meas].keys()))):   
                                         for tfnr in range(eeg_info_study_obj.tf):
                                             if (pti=='group_All_Pts pt_01_' and  condi == 'cond_O1' and  runi=='run_1' and  epochnr == 5 and  tfnr == 468):
                                                 print ('now')

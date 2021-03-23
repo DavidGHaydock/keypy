@@ -4,7 +4,7 @@
 #######  Import Packages  ########
 ##################################
 
-from __future__ import print_function
+
 
 from contextlib import closing
 import h5py
@@ -208,11 +208,11 @@ class CondDataProvider1(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_pt in group_group.keys():
+                for current_pt in list(group_group.keys()):
                     pt_group = f['/{0}/{1}' .format(current_group, current_pt)]
-                    for current_cond in pt_group.keys():
+                    for current_cond in list(pt_group.keys()):
                         out_paths_set.add(ConditionPath(current_group, current_pt, current_cond)) 
         return list(out_paths_set)
     
@@ -221,7 +221,7 @@ class CondDataProvider1(DataProvider):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
             path = '/{0}/{1}/{2}' .format(output_path.group, output_path.pt, output_path.cond)
-            for modelmap_run in f[path].keys():
+            for modelmap_run in list(f[path].keys()):
                 modelmap_run_value = f['/{0}/{1}/{2}' .format(path, modelmap_run, self._inputdataset)] 
                 if all(modelmap_run_value[0,:] == 0):
                     print('Error!', path, modelmap_run, 'has all zeros', 'group, pt, cond ignored.')    
@@ -234,26 +234,26 @@ class CondDataProvider1(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group, output_path.cond, output_path.pt)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
                       
-            if output_path.pt in group_group.keys():
+            if output_path.pt in list(group_group.keys()):
                 pt_group = h['/{0}/{1}' .format(output_path.group, output_path.pt)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.pt)  )   
 
-            if output_path.cond in pt_group.keys():
+            if output_path.cond in list(pt_group.keys()):
                 cond_group = h['/{0}/{1}/{2}' .format(output_path.group, output_path.pt, output_path.cond)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.cond)  )   
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -269,9 +269,9 @@ class PtDataProvider1(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_pt in group_group.keys():
+                for current_pt in list(group_group.keys()):
                     out_paths_set.add(PtPath2(current_group, current_pt))
         return list(out_paths_set)
     
@@ -280,7 +280,7 @@ class PtDataProvider1(DataProvider):
         with closing( h5py.File(self._file, 'r') ) as f:   
             
             #loop across participants
-            for cond in f['/{0}/{1}' .format(output_path.group, output_path.pt)].keys():                
+            for cond in list(f['/{0}/{1}' .format(output_path.group, output_path.pt)].keys()):                
                 path = '/{0}/{1}/{2}' .format(output_path.group, output_path.pt, cond)
 
                 if path in f:
@@ -297,21 +297,21 @@ class PtDataProvider1(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group, output_path.pt)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
                       
-            if output_path.pt in group_group.keys():
+            if output_path.pt in list(group_group.keys()):
                 pt_group = h['/{0}/{1}' .format(output_path.group, output_path.pt)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.pt)  )    
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 pt_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in pt_group.keys():
+            if self._outputdataset in list(pt_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 pt_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -328,7 +328,7 @@ class GroupDataProvider1(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 out_paths_set.add(GroupPath(current_group)) 
         return list(out_paths_set)
     
@@ -336,7 +336,7 @@ class GroupDataProvider1(DataProvider):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
             path = '/{0}' .format(output_path.group)
-            for modelmap_cond in f[path].keys():
+            for modelmap_cond in list(f[path].keys()):
                 if '/{0}/{1}/{2}' .format(path, modelmap_cond, self._inputdataset) in f:
                     modelmap_cond_value = f['/{0}/{1}/{2}' .format(path, modelmap_cond, self._inputdataset)] 
                     if all(modelmap_cond_value[0,:] == 0):
@@ -351,16 +351,16 @@ class GroupDataProvider1(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
                       
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 group_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in group_group.keys():
+            if self._outputdataset in list(group_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 group_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -381,7 +381,7 @@ class AllDataProvider1(DataProvider):
     def get_input_data(self, output_path):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
-            for modelmap_group in f.keys():
+            for modelmap_group in list(f.keys()):
                 if '/{0}/{1}' .format(modelmap_group, self._inputdataset) in f:
                     modelmap_group_value = f['/{0}/{1}' .format(modelmap_group, self._inputdataset)] 
                     if all(modelmap_group_value[0,:] == 0):
@@ -396,16 +396,16 @@ class AllDataProvider1(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.all)
 
-            if output_path.all in h['/'].keys():
+            if output_path.all in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.all)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.all)  ) 
                       
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 group_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in group_group.keys():
+            if self._outputdataset in list(group_group.keys()):
                 print('group already in outputfile, not recomputed')
             else:
                 group_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -421,13 +421,13 @@ class RunDataProvider1(DataProvider):
     def get_outputs(self):      
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_pt in group_group.keys():
+                for current_pt in list(group_group.keys()):
                     pt_group = f['/{0}/{1}' .format(current_group, current_pt)]
-                    for current_cond in pt_group.keys():
+                    for current_cond in list(pt_group.keys()):
                         cond_group = f['/{0}/{1}/{2}' .format(current_group, current_pt, current_cond)]
-                        for current_run in cond_group.keys():
+                        for current_run in list(cond_group.keys()):
                             out_paths_set.add(RunPath(current_group, current_cond, current_run)) 
         return list(out_paths_set)
     
@@ -436,7 +436,7 @@ class RunDataProvider1(DataProvider):
         with closing( h5py.File(self._file, 'r') ) as f:   
             
             #loop across participants
-            for pt in f['/{0}' .format(output_path.group)].keys():                
+            for pt in list(f['/{0}' .format(output_path.group)].keys()):                
                 path = '/{0}/{1}/{2}/{3}' .format(output_path.group, pt, output_path.cond, output_path.run)
 
                 if path in f:
@@ -453,26 +453,26 @@ class RunDataProvider1(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group, output_path.cond)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
 
-            if output_path.cond in group_group.keys():
+            if output_path.cond in list(group_group.keys()):
                 cond_group = h['/{0}/{1}' .format(output_path.group, output_path.cond)]
             else:
                 cond_group = group_group.create_group( '{0}' .format(output_path.cond)  )   
 
-            if output_path.run in cond_group.keys():
+            if output_path.run in list(cond_group.keys()):
                 run_group = h['/{0}/{1}/{2}' .format(output_path.group, output_path.cond, output_path.run)]
             else:
                 run_group = cond_group.create_group( '{0}' .format(output_path.run)  )   
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 run_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in run_group.keys():
+            if self._outputdataset in list(run_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 run_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -488,9 +488,9 @@ class CondDataProvider5(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_cond in group_group.keys():
+                for current_cond in list(group_group.keys()):
                     out_paths_set.add(ConditionPath2(current_group, current_cond)) 
         return list(out_paths_set)
     
@@ -498,7 +498,7 @@ class CondDataProvider5(DataProvider):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
             path = '/{0}/{1}' .format(output_path.group, output_path.cond)
-            for modelmap_run in f[path].keys():
+            for modelmap_run in list(f[path].keys()):
                 if '/{0}/{1}/{2}' .format(path, modelmap_run, self._inputdataset) in f:
                     modelmap_run_value = f['/{0}/{1}/{2}' .format(path, modelmap_run, self._inputdataset)] 
                     if all(modelmap_run_value[0,:] == 0):
@@ -506,27 +506,27 @@ class CondDataProvider5(DataProvider):
                     else:
                         model_maps_all.append(modelmap_run_value[:])
                 else:
-                    print('key', modelmap_run, 'in', f[path].keys(), 'no run group, not considered')
+                    print('key', modelmap_run, 'in', list(f[path].keys()), 'no run group, not considered')
         return model_maps_all
 
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group, output_path.cond)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
 
-            if output_path.cond in group_group.keys():
+            if output_path.cond in list(group_group.keys()):
                 cond_group = h['/{0}/{1}' .format(output_path.group, output_path.cond)]
             else:
                 cond_group = group_group.create_group( '{0}' .format(output_path.cond)  )   
 
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -543,11 +543,11 @@ class CondDataProvider2(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_pt in group_group.keys():
+                for current_pt in list(group_group.keys()):
                     pt_group = f['/{0}/{1}' .format(current_group, current_pt)]
-                    for current_cond in pt_group.keys():
+                    for current_cond in list(pt_group.keys()):
                        out_paths_set.add(ConditionPath2(current_group, current_cond))
         return list(out_paths_set)
     
@@ -555,7 +555,7 @@ class CondDataProvider2(DataProvider):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
             #loop across participants
-            for pt in f['/{0}' .format(output_path.group)].keys():                
+            for pt in list(f['/{0}' .format(output_path.group)].keys()):                
                 path = '/{0}/{1}/{2}' .format(output_path.group, pt, output_path.cond)
 
                 if path in f:
@@ -572,21 +572,21 @@ class CondDataProvider2(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.group, output_path.cond)
 
-            if output_path.group in h['/'].keys():
+            if output_path.group in list(h['/'].keys()):
                 group_group = h['{0}' .format(output_path.group)]
             else:
                 group_group = h['/'].create_group( '{0}' .format(output_path.group)  ) 
 
-            if output_path.cond in group_group.keys():
+            if output_path.cond in list(group_group.keys()):
                 cond_group = h['/{0}/{1}' .format(output_path.group, output_path.cond)]
             else:
                 cond_group = group_group.create_group( '{0}' .format(output_path.cond)  )   
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -602,9 +602,9 @@ class CondDataProvider3(DataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_group in f['/'].keys():
+            for current_group in list(f['/'].keys()):
                 group_group = f['/{0}' .format(current_group)]
-                for current_cond in group_group.keys():
+                for current_cond in list(group_group.keys()):
                     out_paths_set.add(ConditionPath3(current_cond)) 
         return list(out_paths_set)
     
@@ -612,7 +612,7 @@ class CondDataProvider3(DataProvider):
         model_maps_all = []
         with closing( h5py.File(self._file, 'r') ) as f:            
             #loop across groups
-            for group in f['/'].keys():                
+            for group in list(f['/'].keys()):                
                 path = '/{0}/{1}' .format(group, output_path.cond)
 
                 if path in f:
@@ -630,16 +630,16 @@ class CondDataProvider3(DataProvider):
         with closing( h5py.File(self._outputfile) ) as h:
             print('Computing mean models for: ', output_path.cond)
 
-            if output_path.cond in h['/'].keys():
+            if output_path.cond in list(h['/'].keys()):
                 cond_group = h['{0}' .format(output_path.cond)]
             else:
                 cond_group = h['/'].create_group( '{0}' .format(output_path.cond)  ) 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)

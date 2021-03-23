@@ -4,7 +4,7 @@
 #######  Import Packages  ########
 ##################################
 
-from __future__ import print_function
+
 
 import os.path
 import math
@@ -403,7 +403,7 @@ def find_meanmods(confobj, meanmods_foundation):
                     
                         mean_correlations[ithperm] = mean_correlationo
                 
-                    bestpermi=max(mean_correlations.iteritems(), key=operator.itemgetter(1))[0]
+                    bestpermi=max(iter(mean_correlations.items()), key=operator.itemgetter(1))[0]
                 
                     attribution_matrix[number] = list(itertools.permutations((list(range(original_nr_of_maps)))))[bestpermi]
         
@@ -453,7 +453,7 @@ def find_meanmods(confobj, meanmods_foundation):
                 if (delta_correlation >0):
                     #print 'delta correlation bigger than zero, append to best result'
                     #update mean_correlation of current iteration
-                    mean_correlation=numpy.mean(bestcorr.values())
+                    mean_correlation=numpy.mean(list(bestcorr.values()))
                     best_results[iii][ii]=[mean_correlation, randmap, attribution_matrix]     
                 
                 ii += 1
@@ -464,8 +464,8 @@ def find_meanmods(confobj, meanmods_foundation):
         #extract the best randmap and attribution_matrix for each seed       
         best_mean_correlation = 0.1
 
-        for seednr in best_results.keys():
-            for iterationnr in best_results[seednr].keys():
+        for seednr in list(best_results.keys()):
+            for iterationnr in list(best_results[seednr].keys()):
 
                 if len(best_results[seednr][iterationnr]) == 0:
                     if confobj.debug:

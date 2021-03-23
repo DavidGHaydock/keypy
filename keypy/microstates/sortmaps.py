@@ -3,7 +3,7 @@
 #######  Import Packages  ########
 ##################################
 
-from __future__ import print_function
+
 
 import os.path
 import math
@@ -78,7 +78,7 @@ def sortmaps(confobj, input, sortby, input_original):
         mean_correlations[ithperm] = mean_correlationo
         
 
-    bestpermi=max(mean_correlations.iteritems(), key=operator.itemgetter(1))[0]
+    bestpermi=max(iter(mean_correlations.items()), key=operator.itemgetter(1))[0]
 
     if confobj.debug:
         print('bestpermi', bestpermi, 'mean_correlations[bestpermi]', mean_correlations[bestpermi])

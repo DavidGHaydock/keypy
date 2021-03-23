@@ -4,7 +4,7 @@
 #######  Import Packages  ########
 ##################################
 
-from __future__ import print_function
+
 
 from contextlib import closing
 import h5py
@@ -103,7 +103,7 @@ class SortAllByNormDataProvider1(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():
+            for current_level0 in list(f['/'].keys()):
                 out_paths_set.add(Levels1Path(current_level0))                     
         return list(out_paths_set)
     
@@ -144,16 +144,16 @@ class SortAllByNormDataProvider1(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 all_group = k['{0}' .format(output_path.level0)]
             else:
                 all_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 all_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in all_group.keys():
+            if self._outputdataset in list(all_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 all_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -170,8 +170,8 @@ class SortGroupByAllDataProvider1(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
                     out_paths_set.add(Levels1Path(current_level0))
         return list(out_paths_set)
     
@@ -203,16 +203,16 @@ class SortGroupByAllDataProvider1(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 group_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in group_group.keys():
+            if self._outputdataset in list(group_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 group_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -227,8 +227,8 @@ class SortPtByGroupDataProvider1(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
                     out_paths_set.add(Levels2Path(current_level0, current_level1))
         return list(out_paths_set)
     
@@ -260,12 +260,12 @@ class SortPtByGroupDataProvider1(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
@@ -273,10 +273,10 @@ class SortPtByGroupDataProvider1(SortDataProvider):
 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 pt_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in pt_group.keys():
+            if self._outputdataset in list(pt_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 pt_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -292,9 +292,9 @@ class SortCondByPtDataProvider1(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
-                    for current_level2 in f['/{0}/{1}'.format(current_level0, current_level1)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
+                    for current_level2 in list(f['/{0}/{1}'.format(current_level0, current_level1)].keys()):  
                         out_paths_set.add(Levels3Path(current_level0, current_level1, current_level2))
         return list(out_paths_set)
     
@@ -326,26 +326,26 @@ class SortCondByPtDataProvider1(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
 
-            if output_path.level2 in pt_group.keys():
+            if output_path.level2 in list(pt_group.keys()):
                 cond_group = k['/{0}/{1}/{2}' .format(output_path.level0, output_path.level1, output_path.level2)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.level2)  )  
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -363,10 +363,10 @@ class SortRunByCondDataProvider1(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
-                    for current_level2 in f['/{0}/{1}'.format(current_level0, current_level1)].keys():
-                        for current_level3 in f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys():
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
+                    for current_level2 in list(f['/{0}/{1}'.format(current_level0, current_level1)].keys()):
+                        for current_level3 in list(f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys()):
                             out_paths_set.add(Levels4Path(current_level0, current_level1, current_level2, current_level3))                        
         return list(out_paths_set)
     
@@ -398,31 +398,31 @@ class SortRunByCondDataProvider1(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
 
-            if output_path.level2 in pt_group.keys():
+            if output_path.level2 in list(pt_group.keys()):
                 cond_group = k['/{0}/{1}/{2}' .format(output_path.level0, output_path.level1, output_path.level2)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.level2)  )  
 
-            if output_path.level3 in cond_group.keys():
+            if output_path.level3 in list(cond_group.keys()):
                 run_group = k['/{0}/{1}/{2}/{3}' .format(output_path.level0, output_path.level1, output_path.level2, output_path.level3)]
             else:
                 run_group = cond_group.create_group( '{0}' .format(output_path.level3)  )  
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 run_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in run_group.keys():
+            if self._outputdataset in list(run_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 run_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -437,8 +437,8 @@ class SortPtByGroupDataProvider2(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
                     out_paths_set.add(Levels2Path(current_level0, current_level1))
         return list(out_paths_set)
     
@@ -470,12 +470,12 @@ class SortPtByGroupDataProvider2(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
@@ -483,10 +483,10 @@ class SortPtByGroupDataProvider2(SortDataProvider):
 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 pt_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in pt_group.keys():
+            if self._outputdataset in list(pt_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 pt_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -502,9 +502,9 @@ class SortCondByPtDataProvider2(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
-                    for current_level2 in f['/{0}/{1}'.format(current_level0, current_level1)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
+                    for current_level2 in list(f['/{0}/{1}'.format(current_level0, current_level1)].keys()):  
                         out_paths_set.add(Levels3Path(current_level0, current_level1, current_level2))
         return list(out_paths_set)
     
@@ -536,26 +536,26 @@ class SortCondByPtDataProvider2(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
 
-            if output_path.level2 in pt_group.keys():
+            if output_path.level2 in list(pt_group.keys()):
                 cond_group = k['/{0}/{1}/{2}' .format(output_path.level0, output_path.level1, output_path.level2)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.level2)  )  
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 cond_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in cond_group.keys():
+            if self._outputdataset in list(cond_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 cond_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -570,8 +570,8 @@ class SortAllByNormDataProvider2(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
+            for current_level0 in list(f['/'].keys()):
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
                     out_paths_set.add(Levels2Path(current_level0, current_level1))                 
         return list(out_paths_set)
      
@@ -609,12 +609,12 @@ class SortAllByNormDataProvider2(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
@@ -622,10 +622,10 @@ class SortAllByNormDataProvider2(SortDataProvider):
 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 pt_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in pt_group.keys():
+            if self._outputdataset in list(pt_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 pt_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -640,10 +640,10 @@ class SortRunByCondDataProvider2(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
-                    for current_level2 in f['/{0}/{1}'.format(current_level0, current_level1)].keys():
-                        for current_level3 in f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys():
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
+                    for current_level2 in list(f['/{0}/{1}'.format(current_level0, current_level1)].keys()):
+                        for current_level3 in list(f['/{0}/{1}/{2}'.format(current_level0, current_level1, current_level2)].keys()):
                             out_paths_set.add(Levels4Path(current_level0, current_level1, current_level2, current_level3))                        
         return list(out_paths_set)
     
@@ -675,31 +675,31 @@ class SortRunByCondDataProvider2(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
 
-            if output_path.level2 in pt_group.keys():
+            if output_path.level2 in list(pt_group.keys()):
                 cond_group = k['/{0}/{1}/{2}' .format(output_path.level0, output_path.level1, output_path.level2)]
             else:
                 cond_group = pt_group.create_group( '{0}' .format(output_path.level2)  )  
 
-            if output_path.level3 in cond_group.keys():
+            if output_path.level3 in list(cond_group.keys()):
                 run_group = k['/{0}/{1}/{2}/{3}' .format(output_path.level0, output_path.level1, output_path.level2, output_path.level3)]
             else:
                 run_group = cond_group.create_group( '{0}' .format(output_path.level3)  )  
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 run_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in run_group.keys():
+            if self._outputdataset in list(run_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 run_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)
@@ -714,8 +714,8 @@ class SortPtByGroupDataProvider2(SortDataProvider):
     def get_outputs(self):
         out_paths_set = set()
         with closing( h5py.File(self._file, 'r') ) as f:
-            for current_level0 in f['/'].keys():                 
-                for current_level1 in f['/{0}'.format(current_level0)].keys():  
+            for current_level0 in list(f['/'].keys()):                 
+                for current_level1 in list(f['/{0}'.format(current_level0)].keys()):  
                     out_paths_set.add(Levels2Path(current_level0, current_level1))
         return list(out_paths_set)
     
@@ -747,12 +747,12 @@ class SortPtByGroupDataProvider2(SortDataProvider):
     def write_output_data(self, output_path, output_data, output_attributes):
         with closing( h5py.File(self._outputfile, 'a') ) as k:
 
-            if output_path.level0 in k['/'].keys():
+            if output_path.level0 in list(k['/'].keys()):
                 group_group = k['{0}' .format(output_path.level0)]
             else:
                 group_group = k['/'].create_group( '{0}' .format(output_path.level0)  ) 
 
-            if output_path.level1 in group_group.keys():
+            if output_path.level1 in list(group_group.keys()):
                 pt_group = k['/{0}/{1}' .format(output_path.level0, output_path.level1)]
             else:
                 pt_group = group_group.create_group( '{0}' .format(output_path.level1)  )  
@@ -760,10 +760,10 @@ class SortPtByGroupDataProvider2(SortDataProvider):
 
 
             #Save best mean correlation as attribute to group and modelmaps as dataset
-            for key, value in output_attributes.iteritems():
+            for key, value in output_attributes.items():
                 pt_group.attrs['{0}' .format(key)] = value
 
-            if self._outputdataset in pt_group.keys():
+            if self._outputdataset in list(pt_group.keys()):
                 print('group, participant, condition already in outputfile, not recomputed')
             else:
                 pt_group.create_dataset('{0}' .format(self._outputdataset), data = output_data)

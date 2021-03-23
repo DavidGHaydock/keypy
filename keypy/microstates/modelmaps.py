@@ -4,7 +4,7 @@
 #######   load packages   ########
 ##################################
 
-from __future__ import print_function
+
 
 from contextlib import closing
 from math import sqrt
@@ -57,13 +57,13 @@ def run_modmaps(confobj, eeg_info_study_obj, inputhdf5, modmaps_input = 'mstate1
     #gets data, preprocesses and computes mstate modelmaps for each input map
     with closing( h5py.File(inputhdf5) ) as f:
         print('Computing Modelmaps ....')
-        for groupi in f['/'].keys():
+        for groupi in list(f['/'].keys()):
             group_group = f['/%s' % (groupi)]
-            for pti in group_group.keys():
+            for pti in list(group_group.keys()):
                 pt_group = f['/%s/%s' % (groupi, pti)]
-                for condi in pt_group.keys():
+                for condi in list(pt_group.keys()):
                     cond_group = f['/%s/%s/%s' % (groupi, pti, condi)]
-                    for runi in cond_group.keys():
+                    for runi in list(cond_group.keys()):
                         run_group = f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)]
 
                         try:
@@ -76,7 +76,7 @@ def run_modmaps(confobj, eeg_info_study_obj, inputhdf5, modmaps_input = 'mstate1
                         path = '/%s/%s/%s/%s/%s' % (groupi, pti, condi, runi, modmaps_input)  
                         eeg = f[path].value
 
-                        if modmaps_output in f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)].keys():
+                        if modmaps_output in list(f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)].keys()):
                             print(groupi, pti, condi, runi, 'modelmaps not recomputed')
                             continue         
 
@@ -97,7 +97,7 @@ def run_modmaps(confobj, eeg_info_study_obj, inputhdf5, modmaps_input = 'mstate1
                         b_model, b_ind, b_loading, best_fit, exp_var, exp_var_tot=find_modmaps(confobj, eeg_info_study_obj.nch, eeg, gfp_peak_indices, gfp_curve)
 
 
-                        if not modmaps_output in f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)].keys():
+                        if not modmaps_output in list(f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)].keys()):
                             modelmap = f['/%s/%s/%s/%s' % (groupi, pti, condi, runi)].create_dataset(modmaps_output, shape=(confobj.original_nr_of_maps,eeg.shape[1]))
                         else:
                             modelmap = f['/%s/%s/%s/%s/%s' % (groupi, pti, condi, runi, modmaps_output)]

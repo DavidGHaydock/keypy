@@ -2,7 +2,7 @@
 #######  run_mstate_paramters  ########
 ##################################
 
-from __future__ import print_function
+
 
 from scipy.stats import pearsonr
 from keypy.microstates.microstates_helper import *
@@ -103,7 +103,7 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
 
         #get index of mstate map that correlates highest with gfp_peak_index
 
-        for key in attribution_matrix.keys():
+        for key in list(attribution_matrix.keys()):
             tf=epoch[key]
             corr_list = []
             for mapnr in range(len(maps)):
@@ -306,7 +306,7 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
         state_match_percentage=dict.fromkeys(list(range(confobj.original_nr_of_maps)))
         state_match_percentage_std=dict.fromkeys(list(range(confobj.original_nr_of_maps)))
 
-        for keyli in state_match_percentage.keys():
+        for keyli in list(state_match_percentage.keys()):
             state_match_percentage[keyli]=[]
             for ele in start_state_list:
                 if ele[1] == float(keyli):
