@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import glob, os
-from sets import Set
 import numpy as np
 
 

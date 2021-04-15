@@ -9,7 +9,6 @@ from keypy.microstates.microstates_helper import *
 from numpy import sqrt, nanmean
 import os.path as op
 import os
-from sets import Set
 import numpy as np
 from keypy.microstates.parameters_provider import *
 
