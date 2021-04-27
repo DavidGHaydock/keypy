@@ -4,15 +4,22 @@
 
 from __future__ import print_function
 
+from keypy.microstates.microstates_helper import compute_gfp
+from keypy.microstates.microstates_helper import set_gfp_all_1
+from keypy.microstates.microstates_helper import compute_gfp_peaks
+from keypy.microstates.microstates_helper import dissim
+from keypy.microstates.microstates_helper import princomp_B
+
+from keypy.microstates.parameters_provider import ParametersByNormDataProvider1
+from keypy.microstates.parameters_provider import ParametersBy1LevelDataProvider1
+from keypy.microstates.parameters_provider import ParametersBy2LevelsDataProvider1
+from keypy.microstates.parameters_provider import ParametersBy3LevelsDataProvider1
+from keypy.microstates.parameters_provider import ParametersBy4LevelsDataProvider1
+
 from scipy.stats import pearsonr
-from keypy.microstates.microstates_helper import *
 from numpy import sqrt
 import os
-from sets import Set
 import numpy as np
-from keypy.microstates.parameters_provider import *
-
-
 ##############################################
 #######  compute_mstate_parameters  ##########
 ##############################################
@@ -181,7 +188,7 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
 
             if (dur_state is None):
                 if confobj.debug:
-                    print(outti, inni, dur_state)
+                    print(dur_state)
 
 
         #ignore last value pair from start_state_list because you don't know when this state ends
