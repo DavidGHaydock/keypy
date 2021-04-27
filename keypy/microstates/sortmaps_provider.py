@@ -6,11 +6,13 @@
 
 from __future__ import print_function
 
+from keypy.microstates.microstates_helper import *
+from keypy.microstates.microstates_helper import reduce_channels
+
 from contextlib import closing
 import h5py
 import numpy as np
-from keypy.microstates.microstates_helper import *
-
+import os
 
 ##########################
 #######  Classes  ########

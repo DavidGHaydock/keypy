@@ -4,17 +4,23 @@
 
 from __future__ import print_function
 
-from scipy.stats import pearsonr
-from keypy.microstates.microstates_helper import *
-from numpy import sqrt, nanmean
+from keypy.microstates.microstates_helper import compute_gfp
+from keypy.microstates.microstates_helper import reduce_channels
+
+from keypy.microstates.parameters import *
+
+from keypy.microstates.sortmaps_provider import Levels4Path
+
+from numpy import nanmean
 import os.path as op
 import os
 from sets import Set
 import numpy as np
-from keypy.microstates.parameters import *
-from keypy.microstates.sortmaps_provider import *
 from contextlib import closing
 import h5py
+
+
+
 ####-------------------------------------####
 
 ##########################
@@ -60,7 +66,7 @@ def create_parameter_spss_sheets(confobj, eeg_info_study_obj, outputfolder, outp
     #########################################################         Prepare SPSS Sheets     ########################################################################
     ##################################################################################################################################################################
     ##################################################################################################################################################################
-    import csv
+
     three__measures = ['Occurrance per s', 'Mean duration in ms', 'Coverage in percent']
 
     #Map long names to short names for better naming in file
@@ -384,7 +390,6 @@ class ParametersBy1LevelDataProvider1(ParametersDataProvider):
     ### group pt cond
     #ein Aufruf pro Output, gets a list of all modelmaps which are to be sorted by
     def get_sortby_data(self, output_path):
-        model_maps_all = []
 
         with closing( h5py.File(self._sortbyfile, 'r') ) as f: 
             #find out which level you need for sorting
@@ -415,7 +420,6 @@ class ParametersBy2LevelsDataProvider1(ParametersDataProvider):
     ### group pt cond
     #ein Aufruf pro Output, gets a list of all modelmaps which are to be sorted by
     def get_sortby_data(self, output_path):
-        model_maps_all = []
 
         with closing( h5py.File(self._sortbyfile, 'r') ) as f: 
             #from itertools import permutations
@@ -464,7 +468,6 @@ class ParametersBy3LevelsDataProvider1(ParametersDataProvider):
     ### group pt cond
     #ein Aufruf pro Output, gets a list of all modelmaps which are to be sorted by
     def get_sortby_data(self, output_path):
-        model_maps_all = []
 
         with closing( h5py.File(self._sortbyfile, 'r') ) as f: 
             #from itertools import permutations
@@ -522,7 +525,6 @@ class ParametersBy4LevelsDataProvider1(ParametersDataProvider):
     ### group pt cond
     #ein Aufruf pro Output, gets a list of all modelmaps which are to be sorted by
     def get_sortby_data(self, output_path):
-        model_maps_all = []
 
         with closing( h5py.File(self._sortbyfile, 'r') ) as f: 
             #from itertools import permutations

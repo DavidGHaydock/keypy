@@ -6,14 +6,16 @@
 
 from __future__ import print_function
 
+from keypy.microstates.microstates_helper import compute_gfp 
+from keypy.microstates.microstates_helper import princomp_B
+from keypy.microstates.microstates_helper import compute_gfp_peaks
+from keypy.microstates.microstates_helper import set_gfp_all_1
+
 from contextlib import closing
 from math import sqrt
-
 import h5py
 import numpy
 import random
-
-from keypy.microstates.microstates_helper import compute_gfp, gfp_peaks_indices, princomp_B, compute_gfp_peaks, set_gfp_all_1
 
 ####-----------------------------------------------------------------------------------------------------------------------####
 

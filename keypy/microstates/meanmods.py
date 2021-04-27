@@ -6,21 +6,20 @@
 
 from __future__ import print_function
 
+from keypy.microstates.meanmods_provider import normalize_maps
+from keypy.microstates.meanmods_provider import get_data_provider_class
+
+from keypy.microstates.microstates_helper import princomp_B
+
 import os.path
 import math
 import itertools
 import operator
-
 import numpy
 import scipy.stats
-
-from numpy import linalg as LA
-
 import random
 from random import randrange
 
-from keypy.microstates.meanmods_provider import *
-from keypy.microstates.microstates_helper import princomp_B, compute_gfp
 ####--------------------------------------------------------------------------####
 
 

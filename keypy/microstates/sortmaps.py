@@ -5,17 +5,23 @@
 
 from __future__ import print_function
 
+from keypy.microstates.sortmaps_provider import *
+from keypy.microstates.sortmaps_provider import SortPtByGroupDataProvider1
+from keypy.microstates.sortmaps_provider import SortPtByGroupDataProvider2
+from keypy.microstates.sortmaps_provider import SortAllByNormDataProvider1
+from keypy.microstates.sortmaps_provider import SortAllByNormDataProvider2
+from keypy.microstates.sortmaps_provider import SortCondByPtDataProvider1
+from keypy.microstates.sortmaps_provider import SortCondByPtDataProvider2
+from keypy.microstates.sortmaps_provider import SortGroupByAllDataProvider1
+from keypy.microstates.sortmaps_provider import SortRunByCondDataProvider1
+from keypy.microstates.sortmaps_provider import SortRunByCondDataProvider2
+
 import os.path
-import math
 import itertools
 import operator
-
 import numpy as np
 from scipy.stats import pearsonr
-from contextlib import closing
 
-import h5py
-from keypy.microstates.sortmaps_provider import *
 ####-------------------------------------####
 
 ##############################

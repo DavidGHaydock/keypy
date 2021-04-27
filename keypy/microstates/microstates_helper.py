@@ -7,13 +7,10 @@
 import numpy as np
 import scipy
 import scipy.signal
-
 import os
 import os.path
-
 from numpy.linalg.linalg import eig
 from numpy.core.fromnumeric import size, argsort
-
 from numpy import linalg as LA
 
 ####------------------------------------------####

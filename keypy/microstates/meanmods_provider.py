@@ -8,7 +8,8 @@ from __future__ import print_function
 
 from contextlib import closing
 import h5py
-import numpy as np
+
+from keypy.microstates.microstates_helper import current_run
 from keypy.microstates.microstates_helper import *
 
 ##########################
