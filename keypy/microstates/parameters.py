@@ -6,8 +6,7 @@ from __future__ import print_function
 
 from scipy.stats import pearsonr
 from keypy.microstates.microstates_helper import *
-from numpy import sqrt, nanmean
-import os.path as op
+from numpy import sqrt
 import os
 from sets import Set
 import numpy as np
@@ -290,8 +289,10 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
             model[:,col]=model[:,col]/b       
 
         #Covariance Matrix computation
-        covm=np.dot(epoch[gfp_peak_indices],model.T)
-        covm_all=np.dot(epoch,model.T)
+        covm=np.dot(epoch[gfp_peak_indices], model.T)
+        covm=np.square(covm)
+        covm_all=np.dot(epoch, model.T)
+        covm_all=np.square(covm_all)
 
         loading=abs(covm).max(axis=1)
         loading_all=abs(covm_all).max(axis=1)
@@ -299,8 +300,8 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
         b_loading=loading/sqrt(model.shape[1])
         b_loading_all=loading_all/sqrt(model.shape[1])
         		
-        exp_var=sum(b_loading)/sum(epoch[gfp_peak_indices].std(axis=1))
-        exp_var_tot=sum(b_loading_all)/sum(epoch.std(axis=1))
+        exp_var=sum(b_loading)/sum(epoch[gfp_peak_indices].var(axis=1))
+        exp_var_tot=sum(b_loading_all)/sum(epoch.var(axis=1))
 
         ###Compute Percentage of Correspondance between tf & labelby map
         state_match_percentage=dict.fromkeys(list(range(confobj.original_nr_of_maps)))
@@ -332,12 +333,9 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
                 s_m_p_std[key,0]=key
                 s_m_p_std[key,1]=state_match_percentage_std[key]
 
-
-
         #convert to array
         state_match_percentage = s_m_p
         state_match_percentage_std = s_m_p_std
-
 
         #####get all tfs for epochnr
 
@@ -346,9 +344,6 @@ def compute_mstate_parameters(confobj, eeg, maps, eeg_info_study_obj):
                 #print 'mstate', mstate
                 if attribution_matrix_indices[ele][0] == mstate:                  
                     individu_dict[mstate]=np.vstack((individu_dict[mstate], epoch[ele]))
-
-
-
 
 
         ##----------------------------------------------------##
